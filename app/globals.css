@@ -1,8 +1,35 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --app-bg: #f8fafc;
+  --app-surface: #ffffff;
+  --app-surface-muted: #f8fafc;
+  --app-surface-subtle: #f1f5f9;
+  --app-border: #e2e8f0;
+  --app-border-muted: #f1f5f9;
+  --app-text: #0f172a;
+  --app-text-muted: #64748b;
+  --app-text-subtle: #94a3b8;
+  --app-shadow: 0 1px 4px rgba(15,23,42,0.04);
+}
+
+:root.dark {
+  --background: #0a0a0a;
+  --foreground: #ededed;
+  --app-bg: #020617;
+  --app-surface: #0f172a;
+  --app-surface-muted: #111827;
+  --app-surface-subtle: #1e293b;
+  --app-border: #1e293b;
+  --app-border-muted: #334155;
+  --app-text: #f8fafc;
+  --app-text-muted: #cbd5e1;
+  --app-text-subtle: #94a3b8;
+  --app-shadow: 0 1px 4px rgba(0,0,0,0.25);
 }
 
 @theme inline {
@@ -12,15 +39,159 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
+}
+
+* {
+  box-sizing: border-box;
 }
 
 body {
+  margin: 0;
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+  overflow-x: hidden;
+}
+
+.dark .bg-white {
+  background-color: var(--app-surface) !important;
+}
+
+.dark .bg-slate-50,
+.dark .bg-gray-50 {
+  background-color: var(--app-surface-muted) !important;
+}
+
+.dark .bg-slate-100,
+.dark .bg-gray-100 {
+  background-color: var(--app-surface-subtle) !important;
+}
+
+.dark .border-slate-100,
+.dark .border-slate-200,
+.dark .border-gray-200,
+.dark .border-gray-300 {
+  border-color: var(--app-border) !important;
+}
+
+.dark .text-slate-900,
+.dark .text-slate-800,
+.dark .text-slate-700,
+.dark .text-gray-900,
+.dark .text-gray-800,
+.dark .text-gray-700 {
+  color: var(--app-text) !important;
+}
+
+.dark .text-slate-600,
+.dark .text-slate-500,
+.dark .text-gray-600,
+.dark .text-gray-500 {
+  color: var(--app-text-muted) !important;
+}
+
+.dark .text-slate-400,
+.dark .text-gray-400 {
+  color: var(--app-text-subtle) !important;
+}
+
+
+/* =========================================
+   ONBOARDING - MOBILE RESPONSIVE
+   ========================================= */
+
+@media (max-width: 768px) {
+
+  .onboarding-left {
+    display: none !important;
+  }
+
+  .onboarding-content {
+    width: 100% !important;
+    min-height: 100vh !important;
+    padding: 28px 20px !important;
+    align-items: stretch !important;
+    justify-content: flex-start !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    box-sizing: border-box !important;
+  }
+
+  .onboarding-form-wrap {
+    width: 100% !important;
+    max-width: none !important;
+    box-sizing: border-box !important;
+  }
+
+  .onboarding-logo-wrap {
+    margin-bottom: 28px !important;
+  }
+
+  .onboarding-logo {
+    transform: scale(0.85) !important;
+    transform-origin: left center !important;
+  }
+
+  .onboarding-heading {
+    margin-bottom: 26px !important;
+  }
+
+  .onboarding-title {
+    font-size: 28px !important;
+    line-height: 1.1 !important;
+    letter-spacing: -0.5px !important;
+  }
+
+  .onboarding-description {
+    font-size: 14px !important;
+    line-height: 1.55 !important;
+  }
+
+  .onboarding-form {
+    width: 100% !important;
+    gap: 10px !important;
+  }
+
+  .onboarding-option {
+    width: 100% !important;
+    box-sizing: border-box !important;
+    gap: 12px !important;
+    padding: 14px 13px !important;
+    border-radius: 12px !important;
+  }
+
+  .onboarding-option-icon {
+    width: 38px !important;
+    height: 38px !important;
+    border-radius: 10px !important;
+  }
+
+  .onboarding-option-copy {
+    min-width: 0 !important;
+    flex: 1 !important;
+  }
+
+  .onboarding-option-label {
+    font-size: 14px !important;
+    line-height: 1.2 !important;
+  }
+
+  .onboarding-option-description {
+    font-size: 12px !important;
+    line-height: 1.4 !important;
+  }
+
+  .onboarding-option-radio {
+    width: 20px !important;
+    height: 20px !important;
+  }
+
+  .onboarding-form button[type="submit"] {
+    width: 100% !important;
+    min-height: 44px !important;
+    margin-top: 10px !important;
+    padding: 13px 20px !important;
+  }
 }

@@ -1,0 +1,22 @@
+{
+  "name": "ResumeXpert",
+  "short_name": "ResumeXpert",
+  "description": "AI-Powered Career Intelligence — resume analysis, skill gaps, learning roadmaps, and project recommendations.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f8fafc",
+  "theme_color": "#2563eb",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "48x48",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
