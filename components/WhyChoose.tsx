@@ -4,9 +4,9 @@ const features = [
     title: 'AI Skill Gap Detection',
     description: 'Pinpoints the exact skills you are missing for your target role based on real-time job market data from thousands of active postings.',
     icon: (
-      <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
-        <path d="M11 3C6.58 3 3 6.58 3 11s3.58 8 8 8 8-3.58 8-8-3.58-8-8-8z" stroke="#2563eb" strokeWidth="1.8"/>
-        <path d="M11 7v5l3 3" stroke="#2563eb" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+      <svg className="feature-arrow-indicator" width="22" height="22" viewBox="0 0 22 22" fill="none">
+        <path d="M11 3C6.58 3 3 6.58 3 11s3.58 8 8 8 8-3.58 8-8-3.58-8-8-8z" stroke="#2563eb" strokeWidth="1.8" />
+        <path d="M11 7v5l3 3" stroke="#2563eb" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
       </svg>
     ),
     stat: '94%', statLabel: 'gap accuracy',
@@ -16,11 +16,11 @@ const features = [
     description: 'Get a structured, week-by-week learning plan with curated courses, projects, and certifications tailored to your current skill level.',
     icon: (
       <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
-        <path d="M3 17l4-4 4 4 8-8" stroke="#7c3aed" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
-        <circle cx="3" cy="17" r="1.5" fill="#7c3aed"/>
-        <circle cx="7" cy="13" r="1.5" fill="#7c3aed"/>
-        <circle cx="11" cy="17" r="1.5" fill="#7c3aed"/>
-        <circle cx="19" cy="9" r="1.5" fill="#7c3aed"/>
+        <path d="M3 17l4-4 4 4 8-8" stroke="#7c3aed" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+        <circle cx="3" cy="17" r="1.5" fill="#7c3aed" />
+        <circle cx="7" cy="13" r="1.5" fill="#7c3aed" />
+        <circle cx="11" cy="17" r="1.5" fill="#7c3aed" />
+        <circle cx="19" cy="9" r="1.5" fill="#7c3aed" />
       </svg>
     ),
     stat: '3x', statLabel: 'faster career growth',
@@ -30,10 +30,10 @@ const features = [
     description: 'Discover portfolio projects proven to impress hiring managers in your specific domain, with step-by-step guidance to build and showcase them.',
     icon: (
       <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
-        <rect x="3" y="3" width="7" height="7" rx="1.5" stroke="#0891b2" strokeWidth="1.8"/>
-        <rect x="12" y="3" width="7" height="7" rx="1.5" stroke="#0891b2" strokeWidth="1.8"/>
-        <rect x="3" y="12" width="7" height="7" rx="1.5" stroke="#0891b2" strokeWidth="1.8"/>
-        <rect x="12" y="12" width="7" height="7" rx="1.5" stroke="#0891b2" strokeWidth="1.8"/>
+        <rect x="3" y="3" width="7" height="7" rx="1.5" stroke="#0891b2" strokeWidth="1.8" />
+        <rect x="12" y="3" width="7" height="7" rx="1.5" stroke="#0891b2" strokeWidth="1.8" />
+        <rect x="3" y="12" width="7" height="7" rx="1.5" stroke="#0891b2" strokeWidth="1.8" />
+        <rect x="12" y="12" width="7" height="7" rx="1.5" stroke="#0891b2" strokeWidth="1.8" />
       </svg>
     ),
     stat: '200+', statLabel: 'project templates',
@@ -43,8 +43,8 @@ const features = [
     description: 'Receive a quantified resume score with specific, actionable suggestions to improve clarity, keyword density, and ATS compatibility.',
     icon: (
       <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
-        <path d="M14 3H8a2 2 0 00-2 2v12a2 2 0 002 2h6a2 2 0 002-2V5a2 2 0 00-2-2z" stroke="#059669" strokeWidth="1.8"/>
-        <path d="M9 8h4M9 11h4M9 14h2" stroke="#059669" strokeWidth="1.8" strokeLinecap="round"/>
+        <path d="M14 3H8a2 2 0 00-2 2v12a2 2 0 002 2h6a2 2 0 002-2V5a2 2 0 00-2-2z" stroke="#059669" strokeWidth="1.8" />
+        <path d="M9 8h4M9 11h4M9 14h2" stroke="#059669" strokeWidth="1.8" strokeLinecap="round" />
       </svg>
     ),
     stat: 'ATS', statLabel: 'optimized output',
@@ -54,9 +54,9 @@ const features = [
     description: 'Career advice calibrated to your exact specialization — not generic tips. Software, data, design, product, cloud, finance, and more.',
     icon: (
       <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
-        <circle cx="11" cy="11" r="8" stroke="#d97706" strokeWidth="1.8"/>
-        <path d="M11 3a8 8 0 010 16M3 11h16" stroke="#d97706" strokeWidth="1.8" strokeLinecap="round"/>
-        <path d="M7 5.5a10 10 0 010 11M15 5.5a10 10 0 010 11" stroke="#d97706" strokeWidth="1.4" strokeLinecap="round"/>
+        <circle cx="11" cy="11" r="8" stroke="#d97706" strokeWidth="1.8" />
+        <path d="M11 3a8 8 0 010 16M3 11h16" stroke="#d97706" strokeWidth="1.8" strokeLinecap="round" />
+        <path d="M7 5.5a10 10 0 010 11M15 5.5a10 10 0 010 11" stroke="#d97706" strokeWidth="1.4" strokeLinecap="round" />
       </svg>
     ),
     stat: '15+', statLabel: 'career domains',
@@ -66,8 +66,8 @@ const features = [
     description: 'Access domain-specific interview questions, expected answers, and common assessment patterns drawn from real hiring processes.',
     icon: (
       <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
-        <path d="M18 3H4a1 1 0 00-1 1v11a1 1 0 001 1h5l2 3 2-3h5a1 1 0 001-1V4a1 1 0 00-1-1z" stroke="#db2777" strokeWidth="1.8" strokeLinejoin="round"/>
-        <path d="M7 8h8M7 11h5" stroke="#db2777" strokeWidth="1.8" strokeLinecap="round"/>
+        <path d="M18 3H4a1 1 0 00-1 1v11a1 1 0 001 1h5l2 3 2-3h5a1 1 0 001-1V4a1 1 0 00-1-1z" stroke="#db2777" strokeWidth="1.8" strokeLinejoin="round" />
+        <path d="M7 8h8M7 11h5" stroke="#db2777" strokeWidth="1.8" strokeLinecap="round" />
       </svg>
     ),
     stat: '500+', statLabel: 'question bank',
@@ -98,6 +98,7 @@ export default function WhyChoose() {
               fontFamily: "'Plus Jakarta Sans', sans-serif",
               fontSize: 'clamp(28px, 4vw, 42px)', fontWeight: 800,
               color: '#0f172a', letterSpacing: '-0.8px', margin: 0,
+              textAlign: 'center',
             }}>
               Everything you need to accelerate your career
             </h2>
@@ -125,13 +126,16 @@ export default function WhyChoose() {
           align-items: end !important;
           margin-bottom: 64px !important;
         }
-        .why-left,
+        .why-left {
+          text-align: center !important;
+        }
         .why-right {
           text-align: left !important;
         }
         .why-section-badge {
-          display: inline-flex !important;
-          margin-bottom: 20px !important;
+         
+        display: inline-flex !important;
+          margin: 0 auto 20px auto !important;
         }
         .features-grid {
           display: grid !important;
@@ -143,6 +147,16 @@ export default function WhyChoose() {
           max-width: none !important;
           margin: 0 !important;
           box-sizing: border-box !important;
+        }
+
+        @media (min-width: 1024px) {
+          .features-grid {
+            grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+          }
+
+          .feature-arrow-indicator {
+            transform: translateX(-2px);
+          }
         }
 
         @media (max-width: 767px) {
@@ -205,16 +219,16 @@ function FeatureCard({ title, description, icon, stat, statLabel }: {
       transition: 'all 0.2s',
       cursor: 'default',
     }}
-    onMouseEnter={e => {
-      (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-3px)'
-      ;(e.currentTarget as HTMLDivElement).style.boxShadow = '0 12px 36px rgba(15,23,42,0.08)'
-      ;(e.currentTarget as HTMLDivElement).style.borderColor = '#bfdbfe'
-    }}
-    onMouseLeave={e => {
-      (e.currentTarget as HTMLDivElement).style.transform = 'translateY(0)'
-      ;(e.currentTarget as HTMLDivElement).style.boxShadow = 'none'
-      ;(e.currentTarget as HTMLDivElement).style.borderColor = '#e2e8f0'
-    }}>
+      onMouseEnter={e => {
+        (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-3px)'
+          ; (e.currentTarget as HTMLDivElement).style.boxShadow = '0 12px 36px rgba(15,23,42,0.08)'
+          ; (e.currentTarget as HTMLDivElement).style.borderColor = '#bfdbfe'
+      }}
+      onMouseLeave={e => {
+        (e.currentTarget as HTMLDivElement).style.transform = 'translateY(0)'
+          ; (e.currentTarget as HTMLDivElement).style.boxShadow = 'none'
+          ; (e.currentTarget as HTMLDivElement).style.borderColor = '#e2e8f0'
+      }}>
       <div style={{ marginBottom: 20, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div style={{
           width: 44, height: 44, borderRadius: 12, background: '#f8fafc',

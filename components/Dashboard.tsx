@@ -16,7 +16,6 @@ import Sidebar from './Sidebar'
 import Topbar from './Topbar'
 
 const MAX_RESUME_SIZE_BYTES = 5 * 1024 * 1024
-const RESUME_BUCKET = 'resumes'
 const AI_UNAVAILABLE_MESSAGE = 'AI service is temporarily unavailable. Please try again in a few minutes.'
 const SUPPORTED_RESUME_EXTENSIONS = [
   'pdf',
@@ -35,40 +34,34 @@ const QUICK_ACTIONS = [
     icon: <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" stroke="#7c3aed" strokeWidth="1.5"/><path d="M8 5v4M8 11v.5" stroke="#7c3aed" strokeWidth="1.5" strokeLinecap="round"/></svg> },
 ]
 
-function encodeStoragePath(path: string) {
-  return path.split('/').map(encodeURIComponent).join('/')
-}
-
 function isSupportedResumeFile(file: File) {
   const extension = file.name.split('.').pop()?.toLowerCase() ?? ''
   return SUPPORTED_RESUME_EXTENSIONS.includes(extension)
 }
 
-function uploadResumeToStorage(
+type UploadAnalysis = {
+  success?: boolean;
+  analysis?: ResumeAnalysis;
+};
+
+type UploadResponse = {
+  success?: boolean;
+  analysis?: UploadAnalysis;
+  storagePath?: string;
+  error?: string;
+  message?: string;
+};
+
+function uploadResumeToApi(
   file: File,
-  storagePath: string,
+  careerGoal: string,
   accessToken: string,
   onProgress: (progress: number) => void,
 ) {
-  return new Promise<void>((resolve, reject) => {
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-
-    if (!supabaseUrl || !supabaseAnonKey) {
-      reject(new Error('Missing Supabase environment variables.'))
-      return
-    }
-
+  return new Promise<UploadResponse>((resolve, reject) => {
     const xhr = new XMLHttpRequest()
-    const objectUrl = `${supabaseUrl}/storage/v1/object/${RESUME_BUCKET}/${encodeStoragePath(storagePath)}`
-
-    xhr.open('POST', objectUrl)
+    xhr.open('POST', '/api/upload')
     xhr.setRequestHeader('Authorization', `Bearer ${accessToken}`)
-    xhr.setRequestHeader('apikey', supabaseAnonKey)
-    const contentType = file.type || 'application/octet-stream'
-    xhr.setRequestHeader('Content-Type', contentType)
-    xhr.setRequestHeader('Cache-Control', '3600')
-    xhr.setRequestHeader('x-upsert', 'false')
 
     xhr.upload.onprogress = event => {
       if (event.lengthComputable) {
@@ -77,16 +70,35 @@ function uploadResumeToStorage(
     }
 
     xhr.onload = () => {
-      if (xhr.status >= 200 && xhr.status < 300) {
-        resolve()
+      let result: UploadResponse | null = null
+      try {
+        result = JSON.parse(xhr.responseText) as UploadResponse
+      } catch {
+        // Fallback for non-JSON responses
+      }
+
+      if (xhr.status >= 200 && xhr.status < 300 && result) {
+        resolve(result)
         return
       }
 
-      reject(new Error(xhr.responseText || `Resume upload failed with status ${xhr.status}.`))
+      reject(
+        new Error(
+          result?.error ||
+            result?.message ||
+            xhr.responseText ||
+            `Upload failed with status ${xhr.status}.`
+        )
+      )
     }
 
     xhr.onerror = () => reject(new Error('Resume upload failed.'))
-    xhr.send(file)
+
+    const formData = new FormData()
+    formData.append('resume', file)
+    formData.append('careerGoal', careerGoal)
+
+    xhr.send(formData)
   })
 }
 
@@ -301,56 +313,25 @@ export default function Dashboard() {
         return
       }
 
-      const storageFileName = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, '-')}`
-      const storagePath = `${user.id}/${storageFileName}`
-
-      await uploadResumeToStorage(file, storagePath, session.access_token, setUploadProgress)
-
-      const formData = new FormData()
-      formData.append('resume', file)
-      formData.append('careerGoal', careerGoal)
-
-      const response = await fetch('/api/upload', {
-        method: 'POST',
-        body: formData,
-      })
-
-      type UploadAnalysis = {
-        success?: boolean;
-        analysis?: ResumeAnalysis;
-      };
-
-      type UploadResponse = {
-        success?: boolean;
-        analysis?: UploadAnalysis;
-        error?: string;
-        message?: string;
-      };
-
-      let result: UploadResponse | null = null
-      try {
-        result = (await response.json()) as UploadResponse
-      } catch {
-        const fallbackText = await response.text()
-        throw new Error(
-          fallbackText || `Upload failed with status ${response.status}`
-        )
-      }
-
-      if (!response.ok) {
-        throw new Error(
-          result?.error || result?.message || `Upload failed with status ${response.status}`
-        )
-      }
+      const result = await uploadResumeToApi(
+        file,
+        careerGoal,
+        session.access_token,
+        setUploadProgress
+      )
 
       console.log(result)
+
+      const finalStoragePath =
+        result.storagePath ||
+        `${user.id}/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, '-')}`
 
       const { data: resumeData, error: insertError } = await supabase
         .from('resumes')
         .insert({
           user_id: user.id,
           file_name: file.name,
-          storage_path: storagePath,
+          storage_path: finalStoragePath,
         })
         .select()
         .single()

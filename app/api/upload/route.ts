@@ -1,4 +1,5 @@
 import { extractResumeText } from "@/lib/resumeExtractor";
+import { createClient } from "@supabase/supabase-js";
 import { NextRequest, NextResponse } from "next/server";
 
 const AI_UNAVAILABLE_MESSAGE =
@@ -6,6 +7,32 @@ const AI_UNAVAILABLE_MESSAGE =
 
 export async function POST(request: NextRequest) {
   try {
+    const authHeader = request.headers.get("authorization");
+    const token = authHeader?.replace(/^Bearer\s+/i, "");
+
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+
+    const supabase = createClient(
+      supabaseUrl,
+      supabaseAnonKey,
+      token
+        ? {
+            global: {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            },
+          }
+        : undefined
+    );
+
+    let userId: string | null = null;
+    if (token) {
+      const { data: userData } = await supabase.auth.getUser(token);
+      userId = userData?.user?.id ?? null;
+    }
+
     const formData = await request.formData();
     const file = formData.get("resume");
     const careerGoal = formData.get("careerGoal");
@@ -60,6 +87,21 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const storageFileName = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, "-")}`;
+    const storagePath = userId ? `${userId}/${storageFileName}` : storageFileName;
+
+    const fileBuffer = Buffer.from(await file.arrayBuffer());
+    const { error: storageError } = await supabase.storage
+      .from("resumes")
+      .upload(storagePath, fileBuffer, {
+        contentType: file.type || "application/octet-stream",
+        upsert: false,
+      });
+
+    if (storageError) {
+      console.error("Storage upload error:", storageError);
+    }
+
     const analyzeUrl = new URL("/api/analyze", request.url).toString();
 
     const analyzeResponse = await fetch(analyzeUrl, {
@@ -106,6 +148,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       extractedText: resumeText,
+      storagePath,
       analysis,
     });
   } catch (error) {

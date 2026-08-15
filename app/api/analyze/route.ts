@@ -861,52 +861,6 @@ The roadmap should answer:
 Do not overwhelm the user.
 
 ==================================================
-INTERVIEW PREPARATION
-==================================================
-
-technical:
-
-Exactly 10 technical interview questions relevant to:
-
-"${targetGoal}"
-
-hr:
-
-Exactly 10 career-relevant HR questions.
-
-aptitudeTopics:
-
-Exactly 10 relevant aptitude topics.
-
-==================================================
-PROJECT RECOMMENDATIONS
-==================================================
-
-Return 4-6 realistic projects.
-
-Projects must:
-
-- Match "${targetGoal}"
-- Strengthen missing core skills
-- Improve portfolio evidence
-- Be appropriate for the candidate level
-- Avoid unnecessary technologies
-
-Each project MUST contain:
-
-"title"
-"description"
-"difficulty"
-"estimatedTime"
-"technologies"
-
-difficulty MUST be:
-
-"Beginner"
-"Intermediate"
-"Advanced"
-
-==================================================
 FINAL VALIDATION
 ==================================================
 
@@ -920,19 +874,14 @@ Before returning the JSON, verify:
 6. skillsFound.length + missingSkills.length = 15.
 7. additionalSkills contains only genuinely demonstrated resume skills.
 8. No invented technologies.
-9. Projects are considered.
-10. Generic project descriptions do not prove specific technologies.
-11. Irrelevant resume skills are not treated as missing career skills.
-12. missingSkills are ordered by importance.
-13. Suggestions are specific to the resume and career.
-14. learningRoadmap focuses on missingSkills.
-15. technical contains exactly 10 questions.
-16. hr contains exactly 10 questions.
-17. aptitudeTopics contains exactly 10 topics.
-18. projectRecommendations contains 4-6 projects.
-19. resumeScore is between 0 and 100.
-20. atsScore is between 0 and 100.
-21. Return ONLY valid JSON.
+9. Generic project descriptions do not prove specific technologies.
+10. Irrelevant resume skills are not treated as missing career skills.
+11. missingSkills are ordered by importance.
+12. Suggestions are specific to the resume and career.
+13. learningRoadmap focuses on missingSkills.
+14. resumeScore is between 0 and 100.
+15. atsScore is between 0 and 100.
+16. Return ONLY valid JSON.
 
 ==================================================
 JSON STRUCTURE
@@ -946,7 +895,91 @@ JSON STRUCTURE
   "additionalSkills": [],
   "missingSkills": [],
   "suggestions": [],
-  "learningRoadmap": [],
+  "learningRoadmap": []
+}
+
+Resume:
+${resumeText}
+`;
+
+    const extendedPrompt = `
+You are the career content engine for ResumeXpert.
+
+The user has selected this career goal:
+
+"${targetGoal}"
+
+Based on this career goal and the resume provided below, generate the following
+two sections of a complete career analysis report.
+
+==================================================
+INTERVIEW PREPARATION
+==================================================
+
+technical:
+
+Exactly 10 technical interview questions relevant to:
+
+"${targetGoal}"
+
+Questions must be practical and role-specific.
+
+hr:
+
+Exactly 10 career-relevant HR questions.
+
+Questions must be relevant to the candidate's background and career aspiration.
+
+aptitudeTopics:
+
+Exactly 10 relevant aptitude topics a candidate for this role should prepare.
+
+==================================================
+PROJECT RECOMMENDATIONS
+==================================================
+
+Return 4-6 realistic projects.
+
+Projects must:
+
+- Match "${targetGoal}"
+- Strengthen practical skills for this career
+- Improve portfolio evidence
+- Be appropriate for the candidate level
+- Avoid unnecessary technologies
+
+Each project MUST contain:
+
+"title"
+"description"
+"difficulty"
+"estimatedTime"
+"technologies"
+
+difficulty MUST be one of:
+
+"Beginner"
+"Intermediate"
+"Advanced"
+
+==================================================
+FINAL VALIDATION
+==================================================
+
+Before returning the JSON, verify:
+
+1. technical contains exactly 10 questions.
+2. hr contains exactly 10 questions.
+3. aptitudeTopics contains exactly 10 topics.
+4. projectRecommendations contains 4-6 projects.
+5. Each project has all required fields: title, description, difficulty, estimatedTime, technologies.
+6. Return ONLY valid JSON.
+
+==================================================
+JSON STRUCTURE
+==================================================
+
+{
   "interviewPreparation": {
     "technical": [],
     "hr": [],
@@ -967,15 +1000,39 @@ Resume:
 ${resumeText}
 `;
 
-    let rawText = "";
+    /*
+     * ---------------------------------------------------------
+     * PARALLEL GEMINI CALLS
+     * ---------------------------------------------------------
+     *
+     * Call A: Core analysis — skills, suggestions, learning roadmap.
+     *         Contains all evidence-sensitive logic.
+     *
+     * Call B: Extended content — interview preparation and project
+     *         recommendations. Fully independent of skill evidence
+     *         filtering and can run simultaneously with Call A.
+     *
+     * Both calls are launched at the same time with Promise.all.
+     * Total wall-clock time ≈ max(timeA, timeB) instead of timeA + timeB.
+     */
+
+    let rawTextA = "";
+    let rawTextB = "";
 
     try {
-      const response = await ai.models.generateContent({
-        model: "gemini-2.5-flash",
-        contents: prompt,
-      });
+      const [responseA, responseB] = await Promise.all([
+        ai.models.generateContent({
+          model: "gemini-2.5-flash",
+          contents: prompt,
+        }),
+        ai.models.generateContent({
+          model: "gemini-2.5-flash",
+          contents: extendedPrompt,
+        }),
+      ]);
 
-      rawText = response?.text ?? "";
+      rawTextA = responseA?.text ?? "";
+      rawTextB = responseB?.text ?? "";
     } catch (error) {
       console.error("Gemini generateContent failed:", error);
 
@@ -990,17 +1047,24 @@ ${resumeText}
       );
     }
 
-    console.log("========== GEMINI RAW RESPONSE ==========");
-    console.log(rawText);
-    console.log("=========================================");
+    console.log("========== GEMINI RAW RESPONSE A (Core Analysis) ==========");
+    console.log(rawTextA);
+    console.log("========== GEMINI RAW RESPONSE B (Extended Content) ==========");
+    console.log(rawTextB);
+    console.log("===========================================");
 
-    const cleanedText = rawText
-      .replace(/^```json\s*/i, "")
-      .replace(/^```\s*/i, "")
-      .replace(/\s*```$/, "")
-      .trim();
+    function cleanJsonText(raw: string): string {
+      return raw
+        .replace(/^```json\s*/i, "")
+        .replace(/^```\s*/i, "")
+        .replace(/\s*```$/, "")
+        .trim();
+    }
 
-    if (!cleanedText) {
+    const cleanedTextA = cleanJsonText(rawTextA);
+    const cleanedTextB = cleanJsonText(rawTextB);
+
+    if (!cleanedTextA) {
       return NextResponse.json(
         {
           success: false,
@@ -1012,13 +1076,16 @@ ${resumeText}
       );
     }
 
-    let analysis;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let analysisA: any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let analysisB: any;
 
     try {
-      analysis = JSON.parse(cleanedText);
+      analysisA = JSON.parse(cleanedTextA);
     } catch (err) {
-      console.error("Failed to parse Gemini response:", err);
-      console.log(cleanedText);
+      console.error("Failed to parse Gemini core analysis response:", err);
+      console.log(cleanedTextA);
 
       return NextResponse.json(
         {
@@ -1030,6 +1097,27 @@ ${resumeText}
         }
       );
     }
+
+    // Parse extended content (non-fatal — fall back to empty arrays if it fails)
+    if (cleanedTextB) {
+      try {
+        analysisB = JSON.parse(cleanedTextB);
+      } catch (err) {
+        console.error("Failed to parse Gemini extended content response:", err);
+        console.log(cleanedTextB);
+        analysisB = {};
+      }
+    } else {
+      analysisB = {};
+    }
+
+    // Merge extended content into the core analysis object.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const analysis: any = {
+      ...analysisA,
+      interviewPreparation: analysisB?.interviewPreparation ?? { technical: [], hr: [], aptitudeTopics: [] },
+      projectRecommendations: analysisB?.projectRecommendations ?? [],
+    };
 
     /*
      * ---------------------------------------------------------
