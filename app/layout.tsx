@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Toaster } from "react-hot-toast";
+import InstallPrompt from "@/components/InstallPrompt";
 import "./globals.css";
+
 
 const themeInitScript = `
 (() => {
@@ -76,6 +78,7 @@ export default function RootLayout({
           }}
         />
         {children}
+        <InstallPrompt />
       </body>
     </html>
   );
