@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 
+const INSTALL_PROMPT_SEEN_KEY = "resumexpert-install-prompt-seen";
+
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
   userChoice: Promise<{
@@ -13,8 +15,20 @@ export default function InstallPrompt() {
   const [installEvent, setInstallEvent] =
     useState<BeforeInstallPromptEvent | null>(null);
   const [showPrompt, setShowPrompt] = useState(false);
+  const [hasSeenPrompt, setHasSeenPrompt] = useState(() => {
+    if (typeof window === "undefined") return false;
+
+    try {
+      return window.localStorage.getItem(INSTALL_PROMPT_SEEN_KEY) === "true";
+    } catch (error) {
+      console.error("Unable to read install prompt state from localStorage.", error);
+      return true;
+    }
+  });
 
   useEffect(() => {
+    if (hasSeenPrompt) return;
+
     const handleBeforeInstallPrompt = (event: Event) => {
       event.preventDefault();
 
@@ -33,26 +47,36 @@ export default function InstallPrompt() {
         handleBeforeInstallPrompt
       );
     };
-  }, []);
+  }, [hasSeenPrompt]);
+
+  const markPromptSeen = () => {
+    try {
+      window.localStorage.setItem(INSTALL_PROMPT_SEEN_KEY, "true");
+    } catch (error) {
+      console.error("Unable to save install prompt state to localStorage.", error);
+    }
+    setHasSeenPrompt(true);
+    setShowPrompt(false);
+  };
 
   const handleInstall = async () => {
     if (!installEvent) return;
 
+    markPromptSeen();
     await installEvent.prompt();
 
     const choice = await installEvent.userChoice;
 
     if (choice.outcome === "accepted" || choice.outcome === "dismissed") {
       setInstallEvent(null);
-      setShowPrompt(false);
     }
   };
 
   const handleClose = () => {
-    setShowPrompt(false);
+    markPromptSeen();
   };
 
-  if (!showPrompt || !installEvent) {
+  if (hasSeenPrompt || !showPrompt || !installEvent) {
     return null;
   }
 

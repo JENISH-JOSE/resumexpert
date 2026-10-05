@@ -1,8 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import {
+  ArrowLeft,
   Award,
   Gauge,
   CheckCircle2,
@@ -65,6 +67,7 @@ function formatItem(item: unknown): { title: string; subtitle?: string } {
 }
 
 export default function ReportDetails({ reportId }: ReportDetailsProps) {
+  const router = useRouter();
   const [report, setReport] = useState<JsonRecord | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -171,6 +174,21 @@ export default function ReportDetails({ reportId }: ReportDetailsProps) {
 
   return (
     <div className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 space-y-8 text-slate-800 dark:text-slate-200">
+      <button
+        type="button"
+        onClick={() => {
+          if (window.history.length > 1) {
+            router.back();
+          } else {
+            router.push("/dashboard");
+          }
+        }}
+        className="inline-flex min-h-10 items-center gap-2 rounded-lg border border-slate-200 bg-white px-3.5 py-2 text-sm font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
+      >
+        <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+        Back
+      </button>
+
       {/* Header */}
       <div className="border-b border-slate-200 dark:border-slate-800 pb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>

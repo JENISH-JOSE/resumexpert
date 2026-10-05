@@ -170,7 +170,7 @@ export default function MyReports({ reports, onDeleteReport }: MyReportsProps) {
               key={report.id}
               className="rounded-[16px] border border-[var(--app-border)] bg-[var(--app-surface)] p-5 shadow-[var(--app-shadow)]"
             >
-              <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+              <div className="flex flex-col gap-4 lg:flex-row lg:flex-wrap lg:items-center lg:justify-between">
                 <div className="min-w-0">
                   <h2 className="truncate font-['Plus_Jakarta_Sans',sans-serif] text-[16px] font-extrabold text-[var(--app-text)]">{report.file_name}</h2>
 
