@@ -4,7 +4,6 @@ import tesseract from "node-tesseract-ocr";
 import fs from "fs/promises";
 import os from "os";
 import path from "path";
-import sharp from "sharp";
 
 export async function extractResumeText(file: File): Promise<string> {
   const extension = file.name.split(".").pop()?.toLowerCase() ?? "";
@@ -73,6 +72,8 @@ async function extractImageText(file: File): Promise<string> {
   );
 
   try {
+    const { default: sharp } = await import("sharp");
+
     await sharp(imageBuffer)
       .grayscale()
       .normalize()
